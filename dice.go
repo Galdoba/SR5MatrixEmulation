@@ -1,18 +1,21 @@
+/*
+How to Call Tests outside of "dice.go"
+opposedTest()  =>   opposedTest(dicePoolSrc int, dicePoolTrgt int , limit int) (return netHits int, glitch bool, critGlitch bool)
+
+simpleTest()   =>   simpleTest(dicePoolSrc int, limit int, threshold int) (return netHits int, glitch bool, critGlitch bool)
+
+xd6Test()      =>   xd6Test(dicePoolSrc) (return summ int)
+
+extendedTest() => extendedTest(dicePoolSrc int, limit int, threshold int) (return netHits int, glitch bool, critGlitch bool)
+*/
+
 package main
 
 import (
 	"fmt"
 	"math/rand"
 	"time"
-	//"strconv"
 )
-
-var a int
-var resultArray []int
-
-//func main() {
-//roll()
-//}
 
 type DicePool struct {
 	pool     []int
@@ -33,7 +36,7 @@ func setSeed() {
 }
 
 func (dp *DicePool) roll() {
-	assert(dp.isOk, "DicePool not initiated")
+	assert(dp.isOk, "DicePool not initialized")
 	setSeed()
 	for i := range dp.pool {
 		dp.pool[i] = rand.Intn(6) + 1
@@ -91,67 +94,78 @@ func (dp *DicePool) summ() int {
 	return total
 }
 
-func simpleTest(threshold int) (int, bool, bool) { //Первым вхождением должна быть икона которая будет тест, вторым трешхолд (готово)
-	// Конечная запись будет что-то вроде: simpleTest(src *Icon, threshold int) (int, bool, bool) { ... }
-	pl1 := makeDicePool(9)
-	pl1.roll()
-	fmt.Println("Sucesesses =", pl1.successes())
-	netHits := (pl1.successes() - threshold)
-	glitch := pl1.glitch()
-	critGlitch := pl1.critGlitch()
+func simpleTest(dicePool1 int, limit int, threshold int) (int, bool, bool) { 
+	sourceIcon := makeDicePool(dicePool1)
+	sourceIcon.roll()
+	fmt.Println("Sucesesses =", sourceIcon.successes())
+	netHits := (sourceIcon.successes() - threshold)
+	glitch := sourceIcon.glitch()
+	critGlitch := sourceIcon.critGlitch()
 	fmt.Println("Nethits =", netHits, "Glitch =", glitch, "Critical Glitch =", critGlitch)
 	return netHits, glitch, critGlitch
-
 }
 
-func opposedTest(threshold int) (int, bool, bool) { //ой ли???
-
-	pl1 := makeDicePool(9)
-	pl1.roll()
-	fmt.Println("Sucesesses =", pl1.successes())
-	netHits := (pl1.successes() - threshold)
-	glitch := pl1.glitch()
-	critGlitch := pl1.critGlitch()
+func opposedTest(dicePool1 int, dicePool2 int, limit int) (int, bool, bool) {
+	suc1 := 0
+	suc2 := 0
+	sourceIcon := makeDicePool(dicePool1)
+	sourceIcon.roll()
+	targetIcon := makeDicePool(dicePool2)
+	targetIcon.roll()
+	suc1 = sourceIcon.successes()
+	suc2 = targetIcon.successes()
+	if suc1 > limit {
+		fmt.Println("Succeses by Limit:", limit)
+		suc1 = limit
+	}
+	fmt.Println("Source sucesesses =", suc1, "Target successes =", suc2)
+	netHits := suc1 - suc2
+	glitch := sourceIcon.glitch()
+	critGlitch := sourceIcon.critGlitch()
 	fmt.Println("Nethits =", netHits, "Glitch =", glitch, "Critical Glitch =", critGlitch)
 	return netHits, glitch, critGlitch
-
 }
 
-/*func rollSuccessTest(dicePool1 int, limit int, threshold int) (int, bool, bool) {
-	var source DicePool
-	//var target DicePool
-	source.init(dicePool1) //инициирую пул тут - хотя похорошему это надо делать в тест билдере
-	//target.init(6)
-	source.roll()
+func xd6Test(dicePool1 int) (int) {
+	sourceIcon := makeDicePool(dicePool1)
+	sourceIcon.roll()
+	summ := 0
+	summ = sourceIcon.summ()
+	return summ
+}
 
-	successes := 0
-	ones := 0
-	glicth := false
+func extendedTest(dicePool1 int, limit int, threshold int) (int, bool, bool) { 
+	netHits := 0
+	glitch := false
 	critGlitch := false
-	xd6 := 0
-	for _, v := range source.pool {
-		if v == 5 || v == 6 {
-			successes++
-		} else if v == 1 {
-			ones++
+	step := 1
+	i := 0
+	for i = dicePool1; i > 0; i-- {
+		fmt.Println("Step =", step)
+		sourceIcon := makeDicePool(i)
+		sourceIcon.roll()	
+		netHits = netHits + sourceIcon.successes()
+		if sourceIcon.successes() == 0 {
+			i++
 		}
-		xd6 = xd6 + v
-	}
-	fmt.Println("Total succeses =", successes)
-	fmt.Println("Total ones =", ones)
-	if ones > dicePool1/2 {
-		glicth = true
-		fmt.Println("GLITCH", glicth)
-		if successes == 0 {
+		if sourceIcon.glitch() == true {
+			glitch = true
+			fmt.Println("glitch")
+			threshold = threshold + 2
+		}
+		if sourceIcon.critGlitch() == true {
 			critGlitch = true
-			fmt.Println("Critical Glitch", critGlitch)
+			fmt.Println("critGlitch")
+			netHits = 0 // for making sure that test fail
+			break
 		}
+		fmt.Println("Sucesesses =", sourceIcon.successes())
+		if netHits >= threshold {
+			break
+		}
+		step++
+		fmt.Println("Nethits =", netHits, "Threshold =", threshold)
 	}
-	fmt.Println("Total dots =", xd6)
-	//return resultArray[5]
-	//выясняем удовлетворены ли мы результатом, если нет то ReRoll
-	// условно да
-
-	//for i == 1
-	return successes, glicth, critGlitch
-}*/
+	fmt.Println("Nethits =", netHits, "Glitch =", glitch, "Critical Glitch =", critGlitch)
+	return netHits, glitch, critGlitch
+}
