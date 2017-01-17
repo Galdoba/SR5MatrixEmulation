@@ -28,8 +28,12 @@ func createRooster() {
 	fmt.Println("Add Icons")
 	fmt.Println(masterIconList.iconArray)
 	fmt.Println(len(masterIconList.iconArray))
+
 	for masterIconList.iconArray[0].getIconMcm() > 0 {
 		makeCombatOrder()
+		iconSource = pickSourceIcon(order)
+		doMatrixAction(iconSource)
+		bubbleSort(order)
 	}
 }
 
@@ -41,7 +45,7 @@ func makeCombatOrder() []int {
 		//for i:= 0; i < size; i++ {
 		icon = masterIconList.iconArray[i]
 		//assert(icon.getIconInitiative() > 0, "Initiative Less than 0")
-		icon.setIconInitiative(icon.rollInitiative())
+		//icon.setIconInitiative(icon.rollInitiative())
 		order[i] = icon.getIconInitiative()
 		fmt.Println("Icon #:", i, icon)
 		fmt.Println("IconID #:", icon.getIconID())
@@ -52,22 +56,28 @@ func makeCombatOrder() []int {
 	bubbleSort(order)
 	//order[0], order[2] = order[2], order[0]
 	fmt.Println("Order after sorting:", order)
+	return order
+}
 
+func pickSourceIcon([]int) Icon {
+	var icon Icon
 	for i := range masterIconList.iconArray {
 		icon = masterIconList.iconArray[i]
 		if icon.getIconInitiative() == order[0] {
 			iconSource = icon
 			fmt.Println("ходит икона", iconSource.getIconID())
-
-			iconSource.setIconMcm(iconSource.getIconMcm() - 1)
-			iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
-			masterIconList.iconArray[i] = iconSource
 		}
 		fmt.Println(i, icon.getIconInitiative(), order[0])
 	}
 
 	fmt.Println(masterIconList.iconArray)
-	return order
+	return iconSource
+}
+
+func doMatrixAction(sourceIcon Icon) { //должно быть еще название действия и механизмы выбора
+	iconSource.setIconMcm(iconSource.getIconMcm() - 1)
+	iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
+	masterIconList.iconArray[0] = iconSource
 }
 
 func makeIconList() IconList {
