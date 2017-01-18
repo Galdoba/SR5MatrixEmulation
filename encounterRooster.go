@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+    
 )
 
 var order []int
 var orderID []int
 var masterIconList IconList
+var targetList IconList
 var iconSource Icon
 var iconTarget Icon
+var iconNil Icon
+var turn int
 
 type IconList struct {
 	iconArray []Icon
@@ -19,24 +24,58 @@ type IconList struct {
 func createRooster() {
 	fmt.Println("Start Creating Rooster")
 	masterIconList = makeIconList()
-	newIcon1 := createIcon(2)
-	newIcon2 := createIcon(5)
-	newIcon3 := createIcon(3)
-	masterIconList = addIcon(masterIconList, newIcon1)
-	masterIconList = addIcon(masterIconList, newIcon2)
-	masterIconList = addIcon(masterIconList, newIcon3)
+    targetList = makeTargetList()
+	newIcon := createIcon(3)
+	//newIcon2 := createIcon(2)
+	//newIcon3 := createIcon(2)
+	masterIconList = addIcon(masterIconList, newIcon)
+	masterIconList = addIcon(masterIconList, createIcon(2))
+	masterIconList = addIcon(masterIconList, createIcon(2))
 	fmt.Println("Add Icons")
 	fmt.Println(masterIconList.iconArray)
 	fmt.Println(len(masterIconList.iconArray))
-	for masterIconList.iconArray[2].getIconMcm() > 0 {
-		fmt.Println(masterIconList.iconArray, "при старте хода")
+	for masterIconList.iconArray[0].getIconMcm() > 0 {
 		makeCombatOrder()
 		fmt.Println(order)
 		pickIconSource(order)
-		doMatrixAction(iconSource)
+        createTargetList()
+         assert(len(targetList.iconArray)>0, "No Targets")
+        pickIconTarget(targetList)
+		doMatrixAction(iconSource, iconTarget)
+        checkPlay()
+        masterIconList = destroyIcon(masterIconList)
 		fmt.Println(masterIconList.iconArray, "в конце хода")
+        if len(masterIconList.iconArray) < 3 {
+            masterIconList = addIcon(masterIconList, createIcon(6))
+        }
 	}
 
+}
+
+func checkPlay() {
+    assert(masterIconList.iconArray[0].getIconMcm() > 0, "Connection Terminated. player destroyed" )
+
+    
+}
+
+func pickIconTarget(targetList IconList) Icon {
+    assert(targetList.isOk, "No targetList")
+    //fmt.Println("targetList=", targetList.iconArray)
+    i := rand.Intn(len(targetList.iconArray))
+    iconTarget = targetList.iconArray[i]
+    fmt.Println("iconTarget = ", iconTarget)
+    return iconTarget
+}
+
+func createTargetList() IconList {
+    var icon Icon
+    for i := range masterIconList.iconArray {
+       if iconSource.isPlayer != masterIconList.iconArray[i].isPlayer {
+            icon = masterIconList.iconArray[i]
+            targetList = addIcon(targetList, &icon)
+        }
+    }
+    return targetList
 }
 
 func makeCombatOrder() []int {
@@ -44,22 +83,23 @@ func makeCombatOrder() []int {
 	size := getIconlistSize()
 	order = make([]int, size)
 	for i := range masterIconList.iconArray {
-		//for i:= 0; i < size; i++ {
 		icon = masterIconList.iconArray[i]
 		//assert(icon.getIconInitiative() > 0, "Initiative Less than 0")
 		//icon.setIconInitiative(icon.rollInitiative())
 		order[i] = icon.getIconInitiative()
-		//		fmt.Println("Icon #:", i, icon)
-		//		fmt.Println("IconID #:", icon.getIconID())
 		masterIconList.iconArray[i] = icon
 
 	}
 	fmt.Println("Order before sorting:", order)
 	bubbleSort(order)
-	//order[0], order[2] = order[2], order[0]
 	fmt.Println("Order after sorting:", order)
 	if order[0] < 0 {
-		fmt.Println("Highest ini < 0. Rerolling:", order)
+        turn++
+        fmt.Println("Highest ini < 0. Rerolling:", order)
+		fmt.Println("Start turn", turn)
+        fmt.Println("************")
+        fmt.Println("************")
+        fmt.Println("************")
 		allRollInitiative()
 		fmt.Println("Order before sorting:", order)
 		bubbleSort(order)
@@ -84,32 +124,81 @@ func pickIconSource([]int) Icon {
 	return iconSource
 }
 
-func doMatrixAction(sourceIcon Icon) { //должно быть еще название действия и механизмы выбора
-	iconSource.setIconMcm(iconSource.getIconMcm() - 1)
-	iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
-	//masterIconList.iconArray[0] = iconSource //Почему 0?
-	fmt.Println(iconSource)
-	//fmt.Println("Start IconSource to Array")
-	//fmt.Println("изменения в аррэе", masterIconList.iconArray)
-	for i := range masterIconList.iconArray {
+func doMatrixAction(iconSource Icon, iconTarget Icon) { //должно быть еще название действия и механизмы выбора
+    //строитель дайспула пойдет в отдельную функцию
+    dicePoolSrc := iconSource.getIconDeviceRating() * 2
+    dicePoolTrgt := iconTarget.getIconDeviceRating() * 2
+    limit := iconSource.getIconDeviceRating()
+    //
+    netHits,_,_ := opposedTest(dicePoolSrc, dicePoolTrgt, limit)
+    //распределение эффектов пойдет в отдельную функцию
+    if netHits > 0 {
+        iconTarget.setIconMcm(iconTarget.getIconMcm() - netHits)
+        fmt.Println("should hit")
+        fmt.Println(masterIconList.iconArray)
+        fmt.Println(iconTarget)
+    }
+    iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
+	renewIconSource(iconSource)
+    renewIconTarget(iconTarget)
+    targetList.iconArray = nil //зачищаем список целей в конце действия
+}
+
+func destroyIcon(masterIconList IconList) IconList {
+    fmt.Println( "Destroy Icons:", masterIconList.iconArray)
+    for i := range masterIconList.iconArray {
+        if masterIconList.iconArray[i].getIconMcm() < 1 {
+           //toDelete := masterIconList.iconArray[i].getIconID()
+           result := []Icon{}
+           result = append(result, masterIconList.iconArray[0:i]...)
+           result = append(result, masterIconList.iconArray[i+1:]...)
+           masterIconList.iconArray = result
+           break
+           
+        }
+    }
+    return masterIconList
+}
+
+func renewIconSource(iconSource Icon) {
+    for i := range masterIconList.iconArray {
 		if iconSource.getIconID() == masterIconList.iconArray[i].getIconID() {
 			masterIconList.iconArray[i] = iconSource
-			//		fmt.Println("ходит икона лоарп", iconSource.getIconID())
-			//		fmt.Println("изменения в аррэе", masterIconList.iconArray)
-			//		fmt.Println("End IconSource to Array")
+            fmt.Println(masterIconList.iconArray)
 		}
-		//fmt.Println(i, icon.getIconInitiative(), order[0])
 	}
-	//fmt.Println("no IconSource to Array")
+    resetIcon(iconSource)
+}
+
+func renewIconTarget(iconTarget Icon) {
+    for i := range masterIconList.iconArray {
+		if iconTarget.getIconID() == masterIconList.iconArray[i].getIconID() {
+			masterIconList.iconArray[i] = iconTarget
+            //fmt.Println(masterIconList.iconArray)
+		}
+	}
+    resetIcon(iconTarget)
+}
+
+func resetIcon(icon Icon) Icon {
+    icon.setIconID(-2)
+    icon.setIconDeviceRating(-1)
+    icon.setIconInitiative(-1)
+    icon.setIconMcm(-1)
+    return icon
 }
 
 func makeIconList() IconList {
-	var mList IconList
-	mList.iconArray = make([]Icon, 0, 1)
-	mList.isOk = true
-	//createPersona()
-	mList = addIcon(mList, createPersona())
-	return mList
+	masterIconList.iconArray = make([]Icon, 0, 1)
+	masterIconList.isOk = true
+	masterIconList = addIcon(masterIconList, createPersona())
+	return masterIconList
+}
+
+func makeTargetList() IconList {
+	targetList.iconArray = make([]Icon, 0, 1)
+	targetList.isOk = true
+	return targetList
 }
 
 func addIcon(masterIconList IconList, newIcon *Icon) IconList {
