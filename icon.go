@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
+	 "strconv"
 )
 
 var newID int
 
 type Icon struct {
 	id           int
+	name		 string
+	iconType	 string
 	deviceRating int
 	initiative   int
 	mcm          int //Matrix Condition Monitor
@@ -19,6 +22,8 @@ func createIcon(deviceRating int) *Icon {
 	var newIcon Icon
 	newIcon.id = newID
 	newID++
+	newIcon.iconType = "Icon"
+	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)
 	newIcon.deviceRating = deviceRating
 	newIcon.initiative = -1
 	newIcon.maxMCM = 8 + newIcon.deviceRating/2
@@ -35,6 +40,23 @@ func (icon *Icon) setIconID(id int) {
 func (icon *Icon) getIconID() int {
 	return icon.id
 }
+
+func (icon *Icon) setIconName(name string) {
+	icon.name = name
+}
+
+func (icon *Icon) getIconName() string {
+	return icon.name
+}
+
+func (icon *Icon) setIconType(iconType string) {
+	icon.iconType = iconType
+}
+
+func (icon *Icon) getIconType() string {
+	return icon.iconType
+}
+
 
 func (icon *Icon) setIconDeviceRating(deviceRating int) {
 	icon.deviceRating = deviceRating
@@ -92,6 +114,8 @@ func createPersona() *Icon {
 	var newIcon Icon
 	newIcon.id = newID
 	newID++
+	newIcon.iconType = "Persona"
+	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)
 	newIcon.deviceRating = 6
 	newIcon.initiative = -1
 	newIcon.maxMCM = 8 + newIcon.deviceRating/2

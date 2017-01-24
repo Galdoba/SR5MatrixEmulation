@@ -1,6 +1,8 @@
 package main
 
 import "fmt"
+//import "time"
+//import "strings"
 
 func main() {
 
@@ -27,6 +29,7 @@ func main() {
 	  if err != nil {
 	   fmt.Println("Error in integer input")
 	  }*/
+
 
 	createRooster()
 	fmt.Println("******************************************")

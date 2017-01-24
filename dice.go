@@ -122,7 +122,7 @@ func opposedTest(dicePool1 int, dicePool2 int, limit int) (int, bool, bool) {
 	netHits := suc1 - suc2
 	glitch := sourceIcon.glitch()
 	critGlitch := sourceIcon.critGlitch()
-	fmt.Println("Nethits =", netHits, "Glitch =", glitch, "Critical Glitch =", critGlitch)
+	//fmt.Println("Nethits =", netHits, "Glitch =", glitch, "Critical Glitch =", critGlitch)
 	return netHits, glitch, critGlitch
 }
 

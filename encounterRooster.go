@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	//"bufio"
+	//"os"
     
 )
 
@@ -22,12 +24,12 @@ type IconList struct {
 }
 
 func createRooster() {
+	matrixActionList = createMatrixActionList()
+	var comm []string
 	fmt.Println("Start Creating Rooster")
 	masterIconList = makeIconList()
     targetList = makeTargetList()
-	newIcon := createIcon(3)
-	//newIcon2 := createIcon(2)
-	//newIcon3 := createIcon(2)
+	newIcon := createIcon(1)
 	masterIconList = addIcon(masterIconList, newIcon)
 	masterIconList = addIcon(masterIconList, createIcon(2))
 	masterIconList = addIcon(masterIconList, createIcon(2))
@@ -39,12 +41,21 @@ func createRooster() {
 		fmt.Println(order)
 		pickIconSource(order)
         createTargetList()
-         assert(len(targetList.iconArray)>0, "No Targets")
+         assert(len(targetList.iconArray)>0, "No Targets") // опционально - потом если целей нет будет действие ожидания
         pickIconTarget(targetList)
+		if iconSource.isPlayer == true {
+			comm = userInput()
+			//fmt.Println(command)
+		} else {
+			comm = formCommand(iconSource, iconTarget)	
+			//outputRed(command)
+		}
+		outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
+		//нужен утвердитель команды
 		doMatrixAction(iconSource, iconTarget)
         checkPlay()
         masterIconList = destroyIcon(masterIconList)
-		fmt.Println(masterIconList.iconArray, "в конце хода")
+		//fmt.Println(masterIconList.iconArray, "в конце хода")
         if len(masterIconList.iconArray) < 3 {
             masterIconList = addIcon(masterIconList, createIcon(6))
         }
@@ -60,10 +71,10 @@ func checkPlay() {
 
 func pickIconTarget(targetList IconList) Icon {
     assert(targetList.isOk, "No targetList")
-    //fmt.Println("targetList=", targetList.iconArray)
+    fmt.Println("targetList=", targetList.iconArray)
     i := rand.Intn(len(targetList.iconArray))
     iconTarget = targetList.iconArray[i]
-    fmt.Println("iconTarget = ", iconTarget)
+    //fmt.Println("iconTarget = ", iconTarget)
     return iconTarget
 }
 
@@ -114,7 +125,7 @@ func pickIconSource([]int) Icon {
 		icon = masterIconList.iconArray[i]
 		if icon.getIconInitiative() == order[0] {
 			iconSource = icon
-			fmt.Println("ходит икона выбор", iconSource.getIconID())
+			fmt.Println("ходит икона ", iconSource.getIconID())
 			return iconSource
 		}
 		fmt.Println(i, icon.getIconInitiative(), order[0])
@@ -134,9 +145,9 @@ func doMatrixAction(iconSource Icon, iconTarget Icon) { //должно быть 
     //распределение эффектов пойдет в отдельную функцию
     if netHits > 0 {
         iconTarget.setIconMcm(iconTarget.getIconMcm() - netHits)
-        fmt.Println("should hit")
-        fmt.Println(masterIconList.iconArray)
-        fmt.Println(iconTarget)
+       // fmt.Println("should hit")
+       // fmt.Println(masterIconList.iconArray)
+       // fmt.Println(iconTarget)
     }
     iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
 	renewIconSource(iconSource)
@@ -145,11 +156,12 @@ func doMatrixAction(iconSource Icon, iconTarget Icon) { //должно быть 
 }
 
 func destroyIcon(masterIconList IconList) IconList {
-    fmt.Println( "Destroy Icons:", masterIconList.iconArray)
+    //fmt.Println( "Destroy Icons:", masterIconList.iconArray)
     for i := range masterIconList.iconArray {
         if masterIconList.iconArray[i].getIconMcm() < 1 {
            //toDelete := masterIconList.iconArray[i].getIconID()
            result := []Icon{}
+		   fmt.Println(masterIconList.iconArray[i].getIconName(), "destroyed")
            result = append(result, masterIconList.iconArray[0:i]...)
            result = append(result, masterIconList.iconArray[i+1:]...)
            masterIconList.iconArray = result
