@@ -29,8 +29,8 @@ func main() {
 	  if err != nil {
 	   fmt.Println("Error in integer input")
 	  }*/
-
-
+	
+	  
 	createRooster()
 	fmt.Println("******************************************")
 

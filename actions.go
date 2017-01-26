@@ -7,6 +7,8 @@ import (
 )
 
 var matrixActionList []string
+var iconActionList []string
+var personaActionList []string
 
 func createMatrixActionList() []string {
     matrixActionList := make ([]string, 0)
@@ -17,4 +19,18 @@ func createMatrixActionList() []string {
     return matrixActionList
 }
 
+func createIconActList () []string {
+    iconActionList := make ([]string, 0)
+    iconActionList = append(matrixActionList, "HOLD" )
+    //iconActionList = append(matrixActionList, "DATA_SPIKE" )
+    iconActionList = append(matrixActionList, "HACK" )
+    return iconActionList
+}
 
+func createPersonaActList () []string {
+    personaActionList := make ([]string, 0)
+    personaActionList = append(matrixActionList, "HOLD" )
+    personaActionList = append(matrixActionList, "DATA_SPIKE" )
+    personaActionList = append(matrixActionList, "HACK" )
+    return personaActionList
+}

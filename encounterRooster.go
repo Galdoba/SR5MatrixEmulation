@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"math/rand"
 	//"bufio"
-	//"os"
+	
     
+	//"os"
+	"strings"
+	"strconv"
+	"os"
 )
 
+var actionValid bool
 var order []int
 var orderID []int
+var actionName string
 var masterIconList IconList
 var targetList IconList
 var iconSource Icon
@@ -24,54 +30,113 @@ type IconList struct {
 }
 
 func createRooster() {
+	markList = createMarkList()
 	matrixActionList = createMatrixActionList()
+	personaActionList = createPersonaActList()
+	iconActionList = createIconActList()
 	var comm []string
+	actionValid = false
+	markList = createMarkList()
+
+
 	fmt.Println("Start Creating Rooster")
 	masterIconList = makeIconList()
     targetList = makeTargetList()
-	newIcon := createIcon(1)
+	newIcon := createIcon(3)
 	masterIconList = addIcon(masterIconList, newIcon)
-	masterIconList = addIcon(masterIconList, createIcon(2))
-	masterIconList = addIcon(masterIconList, createIcon(2))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
 	fmt.Println("Add Icons")
 	fmt.Println(masterIconList.iconArray)
 	fmt.Println(len(masterIconList.iconArray))
 	for masterIconList.iconArray[0].getIconMcm() > 0 {
+		if len(masterIconList.iconArray) < 256 {
+			masterIconList = addIcon(masterIconList, createIcon(1))
+			masterIconList = addIcon(masterIconList, createIcon(1))
+		masterIconList = addIcon(masterIconList, createIcon(1))
+		masterIconList = addIcon(masterIconList, createIcon(1))
+		masterIconList = addIcon(masterIconList, createIcon(1))
+		} else {
+			outputRed("stop")
+			os.Exit(3)
+		}
+		markList = updateMarks()
 		makeCombatOrder()
-		fmt.Println(order)
+//		fmt.Println(order)
 		pickIconSource(order)
         createTargetList()
-         assert(len(targetList.iconArray)>0, "No Targets") // опционально - потом если целей нет будет действие ожидания
-        pickIconTarget(targetList)
+		if len(targetList.iconArray) < 1 {
+			outputRed("WARNING!!! NO TARGETS SPOTTED...")
+			comm[1] = "HOLD"
+			comm[2] = iconSource.getIconName()
+		} else {
+			 pickIconTarget(targetList)
+		}
 		if iconSource.isPlayer == true {
-			comm = userInput()
-			//fmt.Println(command)
+			outputRed("there are " + strconv.Itoa(len(markList)) + " marks on the list")
+			for actionValid == false {
+				comm = userInput()
+				actionName, actionValid := chooseMatrixAction(iconSource, iconTarget, comm)
+				//comm[1] = actionName
+				if actionValid == true {
+					comm[1] = actionName
+					outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
+					outputRed("command accepted...")
+					outputRed("performing...")
+				} else {
+					outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
+					outputRed("command rejected...")
+				}
+			}
 		} else {
 			comm = formCommand(iconSource, iconTarget)	
-			//outputRed(command)
+			confirmCommand(comm)
+			actionName, _ := chooseMatrixAction(iconSource, iconTarget, comm)
+			comm[1] = actionName
+			outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		}
-		outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
+		actionValid = false
+		//outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		//нужен утвердитель команды
-		doMatrixAction(iconSource, iconTarget)
+		
+/*		confirmCommand(comm)
+		actionName, _ := chooseMatrixAction(iconSource, iconTarget, comm)
+		comm[1] = actionName
+		outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
+*/
+
+
+		doMatrixAction(iconSource, iconTarget, actionName)
         checkPlay()
         masterIconList = destroyIcon(masterIconList)
-		//fmt.Println(masterIconList.iconArray, "в конце хода")
-        if len(masterIconList.iconArray) < 3 {
-            masterIconList = addIcon(masterIconList, createIcon(6))
-        }
 	}
 
 }
 
 func checkPlay() {
     assert(masterIconList.iconArray[0].getIconMcm() > 0, "Connection Terminated. player destroyed" )
-
-    
 }
 
 func pickIconTarget(targetList IconList) Icon {
     assert(targetList.isOk, "No targetList")
-    fmt.Println("targetList=", targetList.iconArray)
+    //fmt.Println("targetList=", targetList.iconArray)
     i := rand.Intn(len(targetList.iconArray))
     iconTarget = targetList.iconArray[i]
     //fmt.Println("iconTarget = ", iconTarget)
@@ -101,7 +166,7 @@ func makeCombatOrder() []int {
 		masterIconList.iconArray[i] = icon
 
 	}
-	fmt.Println("Order before sorting:", order)
+//	fmt.Println("Order before sorting:", order)
 	bubbleSort(order)
 	fmt.Println("Order after sorting:", order)
 	if order[0] < 0 {
@@ -125,17 +190,94 @@ func pickIconSource([]int) Icon {
 		icon = masterIconList.iconArray[i]
 		if icon.getIconInitiative() == order[0] {
 			iconSource = icon
-			fmt.Println("ходит икона ", iconSource.getIconID())
+			//fmt.Println("ходит икона ", iconSource.getIconID())
 			return iconSource
 		}
-		fmt.Println(i, icon.getIconInitiative(), order[0])
+		//fmt.Println(i, icon.getIconInitiative(), order[0])
 	}
-	fmt.Println("не смогли выбрать IconSource")
-	fmt.Println(masterIconList.iconArray)
+	//fmt.Println("не смогли выбрать IconSource")
+	//fmt.Println(masterIconList.iconArray)
 	return iconSource
 }
 
-func doMatrixAction(iconSource Icon, iconTarget Icon) { //должно быть еще название действия и механизмы выбора
+func confirmCommand(comm []string) {
+	//утверждаем iconSource
+	assert(comm[0] != "", "empty iconTarget")
+	for i := range masterIconList.iconArray {
+		if comm[0] == masterIconList.iconArray[i].getIconName() {
+			iconSource = masterIconList.iconArray[i]
+		}
+	}
+	//утверждаем iconTarget
+	assert(comm[2] != "", "empty iconTarget")
+	for i := range masterIconList.iconArray {
+		if comm[2] == masterIconList.iconArray[i].getIconName() {
+			iconTarget = masterIconList.iconArray[i]
+		}
+	}
+	//утверждаем action //возможно нужен будет отдельный метод выбора действия
+	assert(comm[1] != "", "empty action")
+	for i := range matrixActionList {
+		if comm[2] == matrixActionList[i] {
+			actionName = comm[2]
+		}
+	}
+	//утверждаем actionInfo
+	if len(comm) > 3{
+		if comm[3] != "" {
+			fmt.Println("добaвляем условие")
+		} else {
+			fmt.Println("условия нет и вообще этого не должно быть")
+			
+		}
+	}
+
+
+
+
+
+}
+
+func chooseMatrixAction (iconSource Icon, iconTarget Icon, comm []string) (string, bool) {
+	actionValid = false
+	sourceType := iconSource.getIconType()
+	setSeed()
+		for actionValid == false {
+			switch sourceType {
+				case "Icon": actionName = matrixActionList[rand.Intn(len(matrixActionList))]
+					switch actionName {
+						case "HOLD" : //делаем проверку валидности исходя из видимости наличия марок и тд
+						actionValid = true
+						fmt.Println(actionName, "Всегда валидно")
+						case "DATA_SPIKE" :
+						fmt.Println(actionName, "Всегда не валидно")  
+						case "HACK" :
+						fmt.Println(actionName, "Всегда не валидно")  
+					}
+				case "Persona": actionName = personaActionList[rand.Intn(len(personaActionList))] 
+				if iconSource.isPlayer == true{
+					actionName = comm[1]
+					actionName = strings.ToUpper(actionName)
+				}
+					switch actionName {
+						case "HOLD" : //делаем проверку валидности исходя из видимости наличия марок и тд
+						actionValid = true
+						fmt.Println(actionName, "Всегда валидно")
+						case "DATA_SPIKE" :
+						actionValid = true
+						fmt.Println(actionName, "Всегда валидно")  
+						case "HACK" :
+						fmt.Println(actionName, "Всегда не валидно")  
+					}
+				}
+				if iconSource.isPlayer == true {
+					return actionName, actionValid
+				}
+			}	
+	return actionName, actionValid
+}
+
+func doMatrixAction(iconSource Icon, iconTarget Icon, actionName string) { //должно быть еще название действия и механизмы выбора
     //строитель дайспула пойдет в отдельную функцию
     dicePoolSrc := iconSource.getIconDeviceRating() * 2
     dicePoolTrgt := iconTarget.getIconDeviceRating() * 2
@@ -145,9 +287,6 @@ func doMatrixAction(iconSource Icon, iconTarget Icon) { //должно быть 
     //распределение эффектов пойдет в отдельную функцию
     if netHits > 0 {
         iconTarget.setIconMcm(iconTarget.getIconMcm() - netHits)
-       // fmt.Println("should hit")
-       // fmt.Println(masterIconList.iconArray)
-       // fmt.Println(iconTarget)
     }
     iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
 	renewIconSource(iconSource)
@@ -162,10 +301,12 @@ func destroyIcon(masterIconList IconList) IconList {
            //toDelete := masterIconList.iconArray[i].getIconID()
            result := []Icon{}
 		   fmt.Println(masterIconList.iconArray[i].getIconName(), "destroyed")
+		   clearMarks(masterIconList.iconArray[i].getIconID())
            result = append(result, masterIconList.iconArray[0:i]...)
            result = append(result, masterIconList.iconArray[i+1:]...)
            masterIconList.iconArray = result
-           break
+		   destroyIcon(masterIconList)
+		   break
            
         }
     }
@@ -176,7 +317,7 @@ func renewIconSource(iconSource Icon) {
     for i := range masterIconList.iconArray {
 		if iconSource.getIconID() == masterIconList.iconArray[i].getIconID() {
 			masterIconList.iconArray[i] = iconSource
-            fmt.Println(masterIconList.iconArray)
+            //fmt.Println(masterIconList.iconArray)
 		}
 	}
     resetIcon(iconSource)

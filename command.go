@@ -37,12 +37,12 @@ func formCommand(iconSource Icon, iconTarget Icon) ([]string) {
 func userInput () ([]string) {
     var comm []string
     var command string
-    fmt.Println("ходит игрок: вводим команду в ручную ")
     inputLoop := false
     for inputLoop == false {
         var input string
         fmt.Scanln(&input)
         command = parseInput(input)
+        command = strings.Replace(command, " ", "_", -1)
         //outputRed(command)
         comm = strings.SplitN(command, ">",4)
         inputLoop = checkCommand(command)
@@ -131,6 +131,10 @@ func checkTargetSpelling (comm3 string) bool {
      comm3 = strings.TrimRight(comm3, "\n")
      comm3 = strings.Replace(comm3, "\r\n", "", -1)
      //fmt.Println("Начинаем проверку")
+     if len(targetList.iconArray) == 0 {
+         comm3check = true
+         //outputRed("NO TARGETS SPOTTED")
+     }
     for i := range targetList.iconArray {
        // fmt.Println("Шаг", i)
         targetName = strings.ToUpper(targetList.iconArray[i].getIconName())
@@ -157,7 +161,7 @@ func parseInput(s string) string {
         return value 
     } 
     for _, ch := range s { 
-        if ch >= 20 && ch <= 122 { 
+        if ch >= 19 && ch <= 122 { 
             value = value + string(ch)
         } else { 
             value = "-1 "
