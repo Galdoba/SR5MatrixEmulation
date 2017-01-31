@@ -3,6 +3,8 @@ package main
 import (
 	//"fmt"
 	 //"strconv"
+	"fmt"
+	"os"
 )
 
 var markList []Mark
@@ -104,4 +106,30 @@ func (mark *Mark) setMarkQty(markQty int) {
 
 func (mark *Mark) getMarkQty() int {
 	return mark.markQty
+}
+
+func retriveMarkQty (sourceID int, targetID int) int {
+    markQty := -1
+    for i := range markList {
+        if markList[i].getMarkSourceID() == sourceID && markList[i].getMarkTargetID() == targetID {
+            markQty = markList[i].getMarkQty()
+        }
+    }
+    if markQty == -1 {
+        fmt.Println("минус одна марка!!!")
+        fmt.Println("этого не должно быть потому что не должно быть никогда")
+        os.Exit(1)
+    }
+    return markQty
+}
+
+func retriveMarkPosition (sourceID int, targetID int) int {
+    for i := range markList {
+        if markList[i].getMarkSourceID() == sourceID && markList[i].getMarkTargetID() == targetID {
+            return i
+        }
+    }
+     fmt.Println("марка не найдена!!!")
+     fmt.Println("этого не должно быть потому что не должно быть никогда")
+    return 999
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
     "strings"
+    "github.com/nsf/termbox-go" 
 	//"math/rand"
 	//"time"
     //"bufio"
@@ -42,6 +43,7 @@ func userInput () ([]string) {
         var input string
         fmt.Scanln(&input)
         command = parseInput(input)
+        //command = readInput()
         command = strings.Replace(command, " ", "_", -1)
         //outputRed(command)
         comm = strings.SplitN(command, ">",4)
@@ -181,4 +183,34 @@ func outputRed (s string) {
     }
     fmt.Println("")
     
+}
+
+func readInput () string {
+    var input string
+    err := termbox.Init() 
+    if err != nil { 
+        panic(err) 
+    } 
+    defer termbox.Close() 
+
+    termbox.SetInputMode(termbox.InputEsc | termbox.InputMouse) 
+
+    loop: 
+    for { 
+        switch ev := termbox.PollEvent(); ev.Type { 
+            case termbox.EventKey:
+            input = input + string(ev.Ch)
+            //fmt.Printf("%c - %d\n", ev.Ch, ev.Key) 
+            if ev.Key == termbox.KeyEnter { 
+            break loop 
+        } 
+    //case termbox.EventResize: 
+    //fmt.Println(ev.Width, ev.Height) 
+
+    } 
+} 
+
+
+
+    return input
 }

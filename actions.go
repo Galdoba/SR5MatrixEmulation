@@ -19,6 +19,43 @@ func createMatrixActionList() []string {
     return matrixActionList
 }
 
+
+
+
+func checkMarksQty (iconSource Icon, iconTarget Icon, comm1 string) (bool, string) {
+    actionValid := false
+    sourceID := iconSource.getIconID()
+    targetID := iconTarget.getIconID()
+    haveMarks := 0
+    i := retriveMarkPosition(sourceID, targetID)
+    mark := markList[i]
+        if checkMarkExistiense(&mark) == true {
+            haveMarks = retriveMarkQty (sourceID, targetID)         
+        }
+    switch comm1 {
+        case "HOLD": if haveMarks >= 0 {
+            actionValid = true
+        }
+        case "HACK": if haveMarks >= 1 {
+            actionValid = true
+        }
+        case "DATA_SPIKE": if haveMarks >=1 {
+            actionValid = true
+        }
+    }
+    reason := "a"
+    if actionValid == false {
+        reason = "not enough marks for this command..." 
+    } else {
+        reason = "All Good"     
+    }
+    
+    return actionValid, reason
+}
+
+
+
+
 func createIconActList () []string {
     iconActionList := make ([]string, 0)
     iconActionList = append(matrixActionList, "HOLD" )

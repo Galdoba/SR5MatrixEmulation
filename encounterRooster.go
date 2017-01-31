@@ -45,38 +45,16 @@ func createRooster() {
 	newIcon := createIcon(3)
 	masterIconList = addIcon(masterIconList, newIcon)
 	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
+	
 	fmt.Println("Add Icons")
 	fmt.Println(masterIconList.iconArray)
 	fmt.Println(len(masterIconList.iconArray))
 	for masterIconList.iconArray[0].getIconMcm() > 0 {
-		if len(masterIconList.iconArray) < 256 {
-			masterIconList = addIcon(masterIconList, createIcon(1))
-			masterIconList = addIcon(masterIconList, createIcon(1))
-		masterIconList = addIcon(masterIconList, createIcon(1))
-		masterIconList = addIcon(masterIconList, createIcon(1))
-		masterIconList = addIcon(masterIconList, createIcon(1))
-		} else {
+		if len(masterIconList.iconArray) > 128 {
+			outputRed("maximum obcjects reached")
 			outputRed("stop")
 			os.Exit(3)
-		}
+		} 
 		markList = updateMarks()
 		makeCombatOrder()
 //		fmt.Println(order)
@@ -94,15 +72,19 @@ func createRooster() {
 			for actionValid == false {
 				comm = userInput()
 				actionName, actionValid := chooseMatrixAction(iconSource, iconTarget, comm)
-				//comm[1] = actionName
+				//actionValid = checkMarksQty(iconSource, iconTarget, actionName)
 				if actionValid == true {
 					comm[1] = actionName
 					outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 					outputRed("command accepted...")
 					outputRed("performing...")
+					
 				} else {
 					outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 					outputRed("command rejected...")
+					_, reason := checkMarksQty(iconSource, iconTarget, actionName)
+					outputRed(reason)
+					
 				}
 			}
 		} else {
@@ -168,18 +150,18 @@ func makeCombatOrder() []int {
 	}
 //	fmt.Println("Order before sorting:", order)
 	bubbleSort(order)
-	fmt.Println("Order after sorting:", order)
+	//fmt.Println("Order after sorting:", order)
 	if order[0] < 0 {
         turn++
-        fmt.Println("Highest ini < 0. Rerolling:", order)
+  /*      fmt.Println("Highest ini < 0. Rerolling:", order)
 		fmt.Println("Start turn", turn)
         fmt.Println("************")
         fmt.Println("************")
-        fmt.Println("************")
+        fmt.Println("************")*/
 		allRollInitiative()
-		fmt.Println("Order before sorting:", order)
+		//fmt.Println("Order before sorting:", order)
 		bubbleSort(order)
-		fmt.Println("Order after sorting:", order)
+		//fmt.Println("Order after sorting:", order)
 	}
 	return order
 }
@@ -218,9 +200,9 @@ func confirmCommand(comm []string) {
 	//утверждаем action //возможно нужен будет отдельный метод выбора действия
 	assert(comm[1] != "", "empty action")
 	for i := range matrixActionList {
-		if comm[2] == matrixActionList[i] {
-			actionName = comm[2]
-		}
+		if comm[1] == matrixActionList[i] {
+			actionName = comm[1]
+			}
 	}
 	//утверждаем actionInfo
 	if len(comm) > 3{
@@ -267,10 +249,12 @@ func chooseMatrixAction (iconSource Icon, iconTarget Icon, comm []string) (strin
 						actionValid = true
 						fmt.Println(actionName, "Всегда валидно")  
 						case "HACK" :
-						fmt.Println(actionName, "Всегда не валидно")  
+						actionValid = true
+						fmt.Println(actionName, "Всегда валидно")  
 					}
 				}
 				if iconSource.isPlayer == true {
+					actionValid, _ = checkMarksQty(iconSource, iconTarget, actionName)
 					return actionName, actionValid
 				}
 			}	
