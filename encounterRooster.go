@@ -42,6 +42,9 @@ func createRooster() {
 	newIcon := createIcon(1)
 	masterIconList = addIcon(masterIconList, newIcon)
 	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))
 
 	fmt.Println("Add Icons")
 	fmt.Println(masterIconList.iconArray)

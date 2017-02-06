@@ -45,10 +45,11 @@ func updateMarks() []Mark {
 			if checkMarkExistiense(mark) == false {
 				//  fmt.Println("Такой марки НЕТ - добавляем", i, j, mark)
 				markList = addMark(markList, mark)
-				//fmt.Println("Создали марку", mark, i, j)
+				fmt.Println("Создали марку", mark, i, j)
 			}
 		}
 	}
+	fmt.Println(markList)
 	return markList
 }
 

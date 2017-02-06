@@ -2,20 +2,24 @@ package main
 
 import (
 	"fmt"
-	 "strconv"
+	"strconv"
 )
 
 var newID int
 
 type Icon struct {
-	id           int
-	name		 string
-	iconType	 string
-	deviceRating int
-	initiative   int
-	mcm          int //Matrix Condition Monitor
-	maxMCM       int
-	isPlayer     bool
+	id             int
+	name           string
+	iconType       string
+	deviceRating   int
+	attack         int
+	sleaze         int
+	dataProcessing int
+	firewall       int
+	initiative     int
+	mcm            int //Matrix Condition Monitor
+	maxMCM         int
+	isPlayer       bool
 }
 
 func createIcon(deviceRating int) *Icon {
@@ -25,6 +29,10 @@ func createIcon(deviceRating int) *Icon {
 	newIcon.iconType = "Icon"
 	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)
 	newIcon.deviceRating = deviceRating
+	newIcon.attack = deviceRating
+	newIcon.sleaze = deviceRating
+	newIcon.dataProcessing = deviceRating
+	newIcon.firewall = deviceRating
 	newIcon.initiative = -1
 	newIcon.maxMCM = 8 + newIcon.deviceRating/2
 	newIcon.mcm = newIcon.maxMCM
@@ -57,13 +65,44 @@ func (icon *Icon) getIconType() string {
 	return icon.iconType
 }
 
-
 func (icon *Icon) setIconDeviceRating(deviceRating int) {
 	icon.deviceRating = deviceRating
 }
 
 func (icon *Icon) getIconDeviceRating() int {
 	return icon.deviceRating
+}
+
+func (icon *Icon) setIconAttack(attack int) {
+	icon.attack = attack
+}
+
+func (icon *Icon) getIconAttack() int {
+	return icon.attack
+}
+
+func (icon *Icon) setIconSleaze(sleaze int) {
+	icon.sleaze = sleaze
+}
+
+func (icon *Icon) getIconSleaze() int {
+	return icon.sleaze
+}
+
+func (icon *Icon) setIconDataProcessing(dataProcessing int) {
+	icon.dataProcessing = dataProcessing
+}
+
+func (icon *Icon) getIconDataProcessing() int {
+	return icon.dataProcessing
+}
+
+func (icon *Icon) setIconFirewall(firewall int) {
+	icon.firewall = firewall
+}
+
+func (icon *Icon) getIconFirewall() int {
+	return icon.firewall
 }
 
 func (icon *Icon) setIconInitiative(initiative int) {
@@ -117,6 +156,10 @@ func createPersona() *Icon {
 	newIcon.iconType = "Persona"
 	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)
 	newIcon.deviceRating = 6
+	newIcon.attack = 5
+	newIcon.sleaze = 5
+	newIcon.dataProcessing = 5
+	newIcon.firewall = 5
 	newIcon.initiative = -1
 	newIcon.maxMCM = 8 + newIcon.deviceRating/2
 	newIcon.mcm = newIcon.maxMCM
