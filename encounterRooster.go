@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"math/rand"
 	//"bufio"
-
-	//"os"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var actionValid bool
@@ -39,12 +38,15 @@ func createRooster() {
 	fmt.Println("Start Creating Rooster")
 	masterIconList = makeIconList()
 	targetList = makeTargetList()
-	newIcon := createIcon(1)
-	masterIconList = addIcon(masterIconList, newIcon)
+	masterIconList = addIcon(masterIconList, createIcon(1))
+	//newIcon := createIcon(1)
+	
+	/*masterIconList = addIcon(masterIco
+	nList, newIcon)
 	masterIconList = addIcon(masterIconList, createIcon(1))
 	masterIconList = addIcon(masterIconList, createIcon(1))
 	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
+	masterIconList = addIcon(masterIconList, createIcon(1))*/
 
 	fmt.Println("Add Icons")
 	fmt.Println(masterIconList.iconArray)
@@ -75,7 +77,12 @@ func createRooster() {
 				//actionValid = checkMarksQty(iconSource, iconTarget, actionName)
 				if actionValid == true {
 					comm[1] = actionName
-					outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
+					if len(comm) == 4 {
+						outputRed(comm[0] + ">" + comm[1] + ">" + comm[2] + ">" + comm[3])
+					} else {
+						outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
+					}
+					fmt.Println(comm)
 					outputRed("command accepted...")
 					outputRed("performing...")
 
@@ -103,8 +110,33 @@ func createRooster() {
 				comm[1] = actionName
 				outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		*/
+		//comm[0] = strings.Replace(comm[0], " ", "_", -1)
+    	//comm[0] = strings.ToUpper(comm[0])
+    	//comm[1] = strings.Replace(comm[1], " ", "_", -1)
+    	//comm[1] = strings.ToUpper(comm[1])
+    	//comm[2] = strings.Replace(comm[2], " ", "_", -1)
+    	//comm[2] = strings.ToUpper(comm[2])
+		if comm[1] == "MATRIX_SEARCH" {
+			comm[2] = strings.Replace(comm[2], " ", "_", -1)
+    		comm[2] = strings.ToUpper(comm[2])
+			if len(comm) == 3 {
+				comm[3] = "random"
+			}
+			iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
+			
+			switch comm[2] {
+			case "HOST":
+				createHostIcon(comm[3])
 
-		doMatrixAction(iconSource, iconTarget, actionName)
+
+			renewIconSource(iconSource)
+			renewIconTarget(iconTarget)
+			}
+		} else {
+			doMatrixAction(iconSource, iconTarget, actionName)
+		}
+
+		
 		checkPlay()
 		masterIconList = destroyIcon(masterIconList)
 	}
@@ -217,7 +249,7 @@ func confirmCommand(comm []string) {
 
 func doMatrixAction(iconSource Icon, iconTarget Icon, actionName string) { //должно быть еще название действия и механизмы выбора
 	fmt.Println(masterIconList)
-
+	fmt.Println("формируем дайспул")
 	//строитель дайспула пойдет в отдельную функцию
 	dicePoolSrc := iconSource.getIconDeviceRating() * 2
 	dicePoolTrgt := iconTarget.getIconDeviceRating() * 2
@@ -332,3 +364,5 @@ func allRollInitiative() []int {
 	}
 	return order
 }
+
+

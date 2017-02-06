@@ -168,6 +168,32 @@ func createPersona() *Icon {
 	return &newIcon
 }
 
+func createHostIcon(comm3 string) *Icon {
+	var newIcon Icon
+	var host Host
+	createHost(0)
+	newIcon.id = newID
+	newID++
+	newIcon.iconType = "Host"
+	if comm3 != "random" {
+		newIcon.name = comm3	
+	} else {
+		newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)	
+	}
+	newIcon.deviceRating = host.getHostRating()
+	newIcon.attack = host.getHostAttack()
+	newIcon.sleaze = host.getHostSleaze()
+	newIcon.dataProcessing = host.getHostDataProcessing()
+	newIcon.firewall = host.getHostFirewall()
+	newIcon.initiative = -1
+	newIcon.maxMCM = 999999
+	newIcon.mcm = 999999
+	newIcon.isPlayer = false
+	fmt.Println("Host Icon Created")
+	fmt.Println(newIcon)
+	return &newIcon
+}
+
 func (icon *Icon) rollInitiative() int {
 	fmt.Println("Icon №", icon.getIconID(), "rolls for initiative...")
 	init := icon.getIconDeviceRating()*2 + xd6Test(4)

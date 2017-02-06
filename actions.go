@@ -18,6 +18,7 @@ func createMatrixActionList() []string {
 	matrixActionList = append(matrixActionList, "DATA_SPIKE")
 	matrixActionList = append(matrixActionList, "HACK")
 	matrixActionList = append(matrixActionList, "BRUTE_FORCE")
+	matrixActionList = append(matrixActionList, "MATRIX_SEARCH")
 
 	fmt.Println(matrixActionList)
 	return matrixActionList
@@ -50,6 +51,10 @@ func checkMarksQty(iconSource Icon, iconTarget Icon, comm1 string) (bool, string
 		if haveMarks >= 0 {
 			actionValid = true
 		}
+	case "MATRIX_SEARCH":
+		if haveMarks >= 0 {
+			actionValid = true
+		}
 	}
 	reason := "a"
 	if actionValid == false {
@@ -64,8 +69,6 @@ func checkMarksQty(iconSource Icon, iconTarget Icon, comm1 string) (bool, string
 func createIconActList() []string {
 	iconActionList := make([]string, 0)
 	iconActionList = append(matrixActionList, "HOLD")
-	iconActionList = append(matrixActionList, "DATA_SPIKE")
-	iconActionList = append(matrixActionList, "HACK")
 	return iconActionList
 }
 
@@ -75,6 +78,7 @@ func createPersonaActList() []string {
 	personaActionList = append(matrixActionList, "DATA_SPIKE")
 	personaActionList = append(matrixActionList, "HACK")
 	personaActionList = append(matrixActionList, "BRUTE_FORCE")
+	personaActionList = append(matrixActionList, "MATRIX_SEARCH")
 	return personaActionList
 }
 
@@ -84,17 +88,15 @@ func chooseMatrixAction(iconSource Icon, iconTarget Icon, comm []string) (string
 	setSeed()
 	for actionValid == false {
 		switch sourceType {
+			//////////Действия икон (НЕТ)
 		case "Icon":
 			actionName = matrixActionList[rand.Intn(len(matrixActionList))]
 			switch actionName {
 			case "HOLD": //делаем проверку валидности исходя из видимости наличия марок и тд
 				actionValid = true
 				fmt.Println(actionName, "Всегда валидно")
-			case "DATA_SPIKE":
-				fmt.Println(actionName, "Всегда не валидно")
-			case "HACK":
-				fmt.Println(actionName, "Всегда не валидно")
 			}
+			//////////Действия ПЕРСОН (ВСЕ)
 		case "Persona":
 			actionName = personaActionList[rand.Intn(len(personaActionList))]
 			if iconSource.isPlayer == true {
@@ -133,6 +135,8 @@ func actionEffect(actionName *string, iconSource *Icon, iconTarget *Icon, netHit
 		applyBruteForce(iconSource, iconTarget, *netHits)
 	case "HOLD":
 		//applyHold()
+	case "MATRIX_SEARCH":
+		//getComm3()
 	}
 
 }

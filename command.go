@@ -61,24 +61,41 @@ func userInput () ([]string) {
         comm[2] = strings.TrimRight(comm[2], "\n")
         inputLoop = checkCommand(comm[0], comm[1], comm[2])*/
     }
+    
     return comm
     
 }
 
 func checkCommand(command string) bool {
+    sourceOK := false
+    actionOK := false
+    targetOK := false
     comm := strings.SplitN(command, ">",4)
     if len(comm) < 3 {
         outputRed("ERROR: NOT ENOUGH DATA TO EXECUTE COMMAND...")
         outputRed("PLEASE USE NEXT FORM: [sourceIconName]>[action]>[targetIconName]>[action parameter(optional)]")
         return false
     }
+    comm[0] = strings.Replace(comm[0], " ", "_", -1)
+    comm[0] = strings.ToUpper(comm[0])
+    comm[1] = strings.Replace(comm[1], " ", "_", -1)
+    comm[1] = strings.ToUpper(comm[1])
+    comm[2] = strings.Replace(comm[2], " ", "_", -1)
+    comm[2] = strings.ToUpper(comm[2])
     commandOK := false
     //проверка 1 ********************************************
-    sourceOK := checkSourceSpelling(comm[0])
+    sourceOK = checkSourceSpelling(comm[0])
     //проверка 2
-    actionOK := checkActionSpelling(comm[1])
-    //проверка 3 *******************************************
-    targetOK := checkTargetSpelling(comm[2])
+    targetOK = false
+    if comm[1] != "MATRIX_SEARCH" {
+    actionOK = checkActionSpelling(comm[1])
+    //проверка 3  если действие не MATRIX_SEARCH иначе все валидно*******************************************
+    targetOK = checkTargetSpelling(comm[2])
+    } else if comm[1] == "MATRIX_SEARCH" {
+        actionOK = true
+        targetOK = true
+    }
+
     //суммиривание проверок
     if (sourceOK && actionOK && targetOK) == true {
         commandOK = true
@@ -86,16 +103,18 @@ func checkCommand(command string) bool {
     if sourceOK != true {
         outputRed("ERROR: SOURCE INPUT INCORRECT...")
     }
-    if targetOK != true {
-        outputRed("ERROR: TARGET INPUT INCORRECT...")
-    }
     if actionOK != true {
         outputRed("ERROR: COMMAND UNKNOWN...")
     }
-    /*if len(comm) == 4 {
+    if targetOK != true {
+        outputRed("ERROR: TARGET INPUT INCORRECT...")
+    }
+    if len(comm) == 4 {
         fmt.Println("есть четвертый элемент = ", comm[3])
-    }*/
-
+    }
+    if (sourceOK && actionOK && targetOK) == true {
+        commandOK = true
+    } 
     return commandOK
 }
 
