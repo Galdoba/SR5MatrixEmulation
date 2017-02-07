@@ -31,37 +31,36 @@ func createRooster() {
 	matrixActionList = createMatrixActionList()
 	personaActionList = createPersonaActList()
 	iconActionList = createIconActList()
-	var comm []string
+//	var comm []string
 	actionValid = false
 	markList = createMarkList()
 
 	fmt.Println("Start Creating Rooster")
 	masterIconList = makeIconList()
 	targetList = makeTargetList()
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	//newIcon := createIcon(1)
-	
-	/*masterIconList = addIcon(masterIco
-	nList, newIcon)
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))
-	masterIconList = addIcon(masterIconList, createIcon(1))*/
-
+	masterIconList = addIcon(masterIconList, createGridIcon()) //Икона сети (надо расширить до остальных)
 	fmt.Println("Add Icons")
-	fmt.Println(masterIconList.iconArray)
-	fmt.Println(len(masterIconList.iconArray))
+	mainBody()
+}
+
+func mainBody () {
+	var comm []string
 	for masterIconList.iconArray[0].getIconMcm() > 0 {
+		fmt.Println(iconSource.getIconName(), "start action")
+		fmt.Println(masterIconList.iconArray)
 		if len(masterIconList.iconArray) > 128 {
 			outputRed("maximum obcjects reached")
 			outputRed("stop")
 			os.Exit(3)
 		}
 		markList = updateMarks()
-		makeCombatOrder()
-		//		fmt.Println(order)
-		pickIconSource(order)
+		order = makeCombatOrder()
+		fmt.Println("строка 62")
+		fmt.Println(order, "order before pick")
+		iconSource = pickIconSource(order)
+		fmt.Println("строка 64")
 		createTargetList()
+		fmt.Println("строка 66")
 		if len(targetList.iconArray) < 1 {
 			outputRed("WARNING!!! NO TARGETS SPOTTED...")
 			comm[1] = "HOLD"
@@ -69,11 +68,15 @@ func createRooster() {
 		} else {
 			pickIconTarget(targetList)
 		}
+		fmt.Println("строка 74")
 		if iconSource.isPlayer == true {
+			fmt.Println("строка 76")
 			outputRed("there are " + strconv.Itoa(len(markList)) + " marks on the list")
 			for actionValid == false {
+				fmt.Println("строка 78 юзерский ввод")
 				comm = userInput()
 				actionName, actionValid := chooseMatrixAction(iconSource, iconTarget, comm)
+				fmt.Println("строка 81")
 				//actionValid = checkMarksQty(iconSource, iconTarget, actionName)
 				if actionValid == true {
 					comm[1] = actionName
@@ -91,7 +94,7 @@ func createRooster() {
 					outputRed("command rejected...")
 					_, reason := checkMarksQty(iconSource, iconTarget, actionName)
 					outputRed(reason)
-
+					fmt.Println("строка 99")
 				}
 			}
 		} else {
@@ -101,6 +104,7 @@ func createRooster() {
 			comm[1] = actionName
 			outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		}
+		fmt.Println("строка 109")
 		actionValid = false
 		//outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		//нужен утвердитель команды
@@ -122,23 +126,23 @@ func createRooster() {
 			if len(comm) == 3 {
 				comm[3] = "random"
 			}
-			iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
+			
 			
 			switch comm[2] {
 			case "HOST":
-				createHostIcon(comm[3])
+				masterIconList = addIcon(masterIconList, createHostIcon(comm[3]))
+				doMatrixSimpleAction(iconSource, actionName)
 
-
-			renewIconSource(iconSource)
-			renewIconTarget(iconTarget)
+			
 			}
 		} else {
-			doMatrixAction(iconSource, iconTarget, actionName)
+			doMatrixOppAction(iconSource, iconTarget, actionName)
 		}
 
-		
+		//comm = nil
 		checkPlay()
 		masterIconList = destroyIcon(masterIconList)
+		fmt.Println(iconSource.getIconName(), "end action")
 	}
 
 }
@@ -173,16 +177,20 @@ func makeCombatOrder() []int {
 	order = make([]int, size)
 	for i := range masterIconList.iconArray {
 		icon = masterIconList.iconArray[i]
+		if icon.getIconType() == "Host" || icon.getIconType() == "Grid" {
+			icon.setIconInitiative(-100)
+		
+		}
 		//assert(icon.getIconInitiative() > 0, "Initiative Less than 0")
 		//icon.setIconInitiative(icon.rollInitiative())
 		order[i] = icon.getIconInitiative()
 		masterIconList.iconArray[i] = icon
 
 	}
-	//	fmt.Println("Order before sorting:", order)
+		fmt.Println("Order before sorting:", order)
 	bubbleSort(order)
-	//fmt.Println("Order after sorting:", order)
-	if order[0] < 0 {
+	fmt.Println("Order after sorting:", order)
+	if order[0] < 1 {
 		turn++
 		/*      fmt.Println("Highest ini < 0. Rerolling:", order)
 				fmt.Println("Start turn", turn)
@@ -197,13 +205,14 @@ func makeCombatOrder() []int {
 	return order
 }
 
-func pickIconSource([]int) Icon {
+func pickIconSource(order []int) Icon {
 	var icon Icon
 	for i := range masterIconList.iconArray {
 		icon = masterIconList.iconArray[i]
 		if icon.getIconInitiative() == order[0] {
 			iconSource = icon
-			//fmt.Println("ходит икона ", iconSource.getIconID())
+			fmt.Println("ходит икона ", iconSource.getIconID())
+			fmt.Println("order", order)
 			return iconSource
 		}
 		//fmt.Println(i, icon.getIconInitiative(), order[0])
@@ -247,7 +256,7 @@ func confirmCommand(comm []string) {
 
 }
 
-func doMatrixAction(iconSource Icon, iconTarget Icon, actionName string) { //должно быть еще название действия и механизмы выбора
+func doMatrixOppAction(iconSource Icon, iconTarget Icon, actionName string) { //должно быть еще название действия и механизмы выбора
 	fmt.Println(masterIconList)
 	fmt.Println("формируем дайспул")
 	//строитель дайспула пойдет в отдельную функцию
@@ -256,6 +265,24 @@ func doMatrixAction(iconSource Icon, iconTarget Icon, actionName string) { //д�
 	limit := iconSource.getIconDeviceRating()
 	//
 	netHits, _, _ := opposedTest(dicePoolSrc, dicePoolTrgt, limit)
+	//распределение эффектов пойдет в отдельную функцию
+	actionEffect(&actionName, &iconSource, &iconTarget, &netHits)
+
+	iconSource.setIconInitiative(iconSource.getIconInitiative() - 10)
+	renewIconSource(iconSource)
+	renewIconTarget(iconTarget)
+	targetList.iconArray = nil //зачищаем список целей в конце действия
+	fmt.Println(masterIconList)
+}
+
+func doMatrixSimpleAction(iconSource Icon, actionName string) { //должно быть еще название действия и механизмы выбора
+	fmt.Println(masterIconList)
+	fmt.Println("формируем дайспул")
+	//строитель дайспула пойдет в отдельную функцию
+	dicePoolSrc := iconSource.getIconDeviceRating() * 2
+	threshold := 1
+	limit := iconSource.getIconDeviceRating()
+	netHits, _, _ := simpleTest(dicePoolSrc, limit, threshold)
 	//распределение эффектов пойдет в отдельную функцию
 	actionEffect(&actionName, &iconSource, &iconTarget, &netHits)
 
@@ -359,6 +386,9 @@ func allRollInitiative() []int {
 		var icon Icon
 		icon = masterIconList.iconArray[i]
 		icon.setIconInitiative(icon.rollInitiative())
+		if icon.getIconType() == "Grid" || icon.getIconType() == "Host"{
+			icon.setIconInitiative(-100)
+		}
 		masterIconList.iconArray[i].setIconInitiative(icon.getIconInitiative())
 		order[i] = masterIconList.iconArray[i].getIconInitiative()
 	}

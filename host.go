@@ -6,6 +6,13 @@ import "fmt"
 //"strconv"
 
 var icMasterList []string
+var host Host
+var icList []IC
+
+type IC struct {
+	icName string
+	isLoaded bool
+}
 
 type Host struct {
 	deviceRating   int
@@ -16,8 +23,7 @@ type Host struct {
 	grid           string
 }
 
-func createHost(deviceRating int) {
-	var host Host
+func createHost(deviceRating int) Host {
 	icMasterList = generateICMasterList()
 	setSeed()
 	if deviceRating > 0 && deviceRating < 13 {
@@ -39,6 +45,7 @@ func createHost(deviceRating int) {
 	fmt.Println("host: rating/ATT/SLZ/DTPROSS/FRWALL")
 	fmt.Println(host)
 	pickICforHost(&host, icMasterList)
+	return host
 }
 
 func generateICMasterList() []string {
@@ -63,7 +70,7 @@ func generateICMasterList() []string {
 	return icMasterList
 }
 
-func pickICforHost(host *Host, icMasterList []string) {
+func pickICforHost(host *Host, icMasterList []string) []string {
 	activeIClist := make([]string, 0)
 	activeIClist = icMasterList
 	for i := rand.Intn(100); i > 0; i-- {
@@ -77,27 +84,9 @@ func pickICforHost(host *Host, icMasterList []string) {
 	for i := range hostICList {
 		fmt.Println("IC #", i+1, "is", hostICList[i])
 	}
-	//fmt.Println(hostICList)
-
+	return hostICList
 }
 
-/*tatic void pickICForHost() {
-	String[] pickIC = new String[icList.size()];
-	activeICList.clear();
-	int hRtng = getHostRating();
-	activeICList.add("Patrol IC");
-	//loadedICList.add("Patrol IC");
-	System.out.println("Patrol IC");
-	for (int a=1; a < hRtng; a++) {
-		if (icList.size() > 0) {
-			int index = new Random().nextInt(icList.size());
-			pickIC[index] = icList.get(index);
-			activeICList.add(pickIC[index]);
-			icList.remove(index);
-			System.out.println(pickIC[index]);
-		}
-	}
-}*/
 func (host *Host) setHostRating(deviceRating int) {
 	host.deviceRating = deviceRating
 }

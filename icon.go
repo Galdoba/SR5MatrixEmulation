@@ -160,7 +160,7 @@ func createPersona() *Icon {
 	newIcon.sleaze = 5
 	newIcon.dataProcessing = 5
 	newIcon.firewall = 5
-	newIcon.initiative = -1
+	newIcon.initiative = 1
 	newIcon.maxMCM = 8 + newIcon.deviceRating/2
 	newIcon.mcm = newIcon.maxMCM
 	newIcon.isPlayer = true
@@ -171,7 +171,7 @@ func createPersona() *Icon {
 func createHostIcon(comm3 string) *Icon {
 	var newIcon Icon
 	var host Host
-	createHost(0)
+	host = createHost(0)
 	newIcon.id = newID
 	newID++
 	newIcon.iconType = "Host"
@@ -191,6 +191,44 @@ func createHostIcon(comm3 string) *Icon {
 	newIcon.isPlayer = false
 	fmt.Println("Host Icon Created")
 	fmt.Println(newIcon)
+	return &newIcon
+}
+
+func createICIcon() *Icon {
+	var newIcon Icon
+	newIcon.id = newID
+	newID++
+	newIcon.iconType = "IC"
+	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)	
+	newIcon.deviceRating = host.getHostRating()
+	newIcon.attack = host.getHostAttack()
+	newIcon.sleaze = host.getHostSleaze()
+	newIcon.dataProcessing = host.getHostDataProcessing()
+	newIcon.firewall = host.getHostFirewall()
+	newIcon.initiative = -1
+	newIcon.maxMCM = 8 + newIcon.getIconDeviceRating()/2
+	newIcon.mcm = 8 + newIcon.getIconDeviceRating()/2
+	newIcon.isPlayer = false
+	fmt.Println("Host Icon Created")
+	fmt.Println(newIcon)
+	return &newIcon
+}
+
+func createGridIcon() *Icon {
+	var newIcon Icon
+	createHost(0)
+	newIcon.id = newID
+	newID++
+	newIcon.iconType = "Grid"
+	newIcon.name = "GridIcon"
+	newIcon.deviceRating = 3
+	newIcon.dataProcessing = 3
+	newIcon.firewall = 3
+	newIcon.initiative = -1
+	newIcon.maxMCM = 999999
+	newIcon.mcm = 999999
+	newIcon.isPlayer = false
+	fmt.Println("Grid Icon Created")
 	return &newIcon
 }
 

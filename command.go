@@ -39,6 +39,7 @@ func userInput () ([]string) {
     var comm []string
     var command string
     inputLoop := false
+    fmt.Println("строка 42 юзеринпут")
     for inputLoop == false {
         var input string
         fmt.Scanln(&input)
