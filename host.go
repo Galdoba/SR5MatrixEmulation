@@ -7,11 +7,16 @@ import "fmt"
 
 var icMasterList []string
 var host Host
-var icList []IC
+var ic IC
 
 type IC struct {
 	icName string
 	isLoaded bool
+	deviceRating   int
+	attack         int
+	sleaze         int
+	dataProcessing int
+	firewall       int
 }
 
 type Host struct {
@@ -21,9 +26,11 @@ type Host struct {
 	dataProcessing int
 	firewall       int
 	grid           string
+	icArray		   []IC
+	isCreated	   bool
 }
 
-func createHost(deviceRating int) Host {
+func createHost(deviceRating int) *Host {
 	icMasterList = generateICMasterList()
 	setSeed()
 	if deviceRating > 0 && deviceRating < 13 {
@@ -44,8 +51,27 @@ func createHost(deviceRating int) Host {
 
 	fmt.Println("host: rating/ATT/SLZ/DTPROSS/FRWALL")
 	fmt.Println(host)
-	pickICforHost(&host, icMasterList)
-	return host
+	hostICList := pickICforHost(&host, icMasterList)
+	host.icArray = make([]IC, 0)
+	for i := range hostICList {
+		newIC := createIC(hostICList, i)
+		host.icArray = append(host.icArray, *newIC)
+	}
+	host.icArray[0].isLoaded = true
+	host.isCreated = true
+	return &host
+}
+
+func createIC(hostICList []string, i int) *IC {
+	var localIC IC
+	localIC.icName = hostICList[i]
+	localIC.deviceRating = host.getHostRating()
+	localIC.attack = host.getHostAttack()
+	localIC.sleaze = host.getHostSleaze()
+	localIC.dataProcessing = host.getHostDataProcessing()
+	localIC.firewall = host.getHostFirewall()
+	localIC.isLoaded = false
+	return &localIC
 }
 
 func generateICMasterList() []string {
@@ -140,5 +166,32 @@ func shuffleString(atributeArray []string) {
 	for i := len(atributeArray) - 1; i > 0; i-- {
 		j := rand.Intn(i)
 		atributeArray[i], atributeArray[j] = atributeArray[j], atributeArray[i]
+	}
+}
+
+func hostAction() {
+	proceed := false
+	canLoad := 0
+	setSeed()
+	//host.icArray[0].isLoaded = false
+	if host.icArray[0].isLoaded == false {
+		newIC := createICIcon(0)
+		masterIconList.iconArray = append(masterIconList.iconArray, *newIC)		
+	} else {
+		for j := range host.icArray {
+			if host.icArray[j].isLoaded == false {
+				canLoad++ 
+			}
+		}
+		for proceed == false && canLoad > 0 {	
+			i := rand.Intn(host.getHostRating())
+	//		fmt.Println("choose", i, "can pick", canLoad)
+			if host.icArray[i].isLoaded == false {
+				newIC := createICIcon(i)
+				masterIconList.iconArray = append(masterIconList.iconArray, *newIC)
+				host.icArray[i].isLoaded = true
+				break
+			}
+		}
 	}
 }

@@ -72,6 +72,13 @@ func createIconActList() []string {
 	return iconActionList
 }
 
+func createICActList() []string {
+	icActionList := make([]string, 0)
+	icActionList = append(matrixActionList, "HOLD")
+	icActionList = append(matrixActionList, "DATA_SPIKE")
+	return icActionList
+}
+
 func createPersonaActList() []string {
 	personaActionList := make([]string, 0)
 	personaActionList = append(matrixActionList, "HOLD")
@@ -93,6 +100,13 @@ func chooseMatrixAction(iconSource Icon, iconTarget Icon, comm []string) (string
 			actionName = matrixActionList[rand.Intn(len(matrixActionList))]
 			switch actionName {
 			case "HOLD": //делаем проверку валидности исходя из видимости наличия марок и тд
+				actionValid = true
+				fmt.Println(actionName, "Всегда валидно")
+			}
+		case "IC":
+			actionName = matrixActionList[rand.Intn(len(matrixActionList))]
+			switch actionName {
+			case "DATA_SPIKE": //делаем проверку валидности исходя из видимости наличия марок и тд
 				actionValid = true
 				fmt.Println(actionName, "Всегда валидно")
 			}

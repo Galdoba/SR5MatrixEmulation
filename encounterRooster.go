@@ -55,12 +55,9 @@ func mainBody () {
 		}
 		markList = updateMarks()
 		order = makeCombatOrder()
-		fmt.Println("строка 62")
-		fmt.Println(order, "order before pick")
+		//fmt.Println(order, "order before pick")
 		iconSource = pickIconSource(order)
-		fmt.Println("строка 64")
 		createTargetList()
-		fmt.Println("строка 66")
 		if len(targetList.iconArray) < 1 {
 			outputRed("WARNING!!! NO TARGETS SPOTTED...")
 			comm[1] = "HOLD"
@@ -68,15 +65,11 @@ func mainBody () {
 		} else {
 			pickIconTarget(targetList)
 		}
-		fmt.Println("строка 74")
 		if iconSource.isPlayer == true {
-			fmt.Println("строка 76")
 			outputRed("there are " + strconv.Itoa(len(markList)) + " marks on the list")
 			for actionValid == false {
-				fmt.Println("строка 78 юзерский ввод")
 				comm = userInput()
 				actionName, actionValid := chooseMatrixAction(iconSource, iconTarget, comm)
-				fmt.Println("строка 81")
 				//actionValid = checkMarksQty(iconSource, iconTarget, actionName)
 				if actionValid == true {
 					comm[1] = actionName
@@ -104,7 +97,6 @@ func mainBody () {
 			comm[1] = actionName
 			outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		}
-		fmt.Println("строка 109")
 		actionValid = false
 		//outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		//нужен утвердитель команды
@@ -130,9 +122,11 @@ func mainBody () {
 			
 			switch comm[2] {
 			case "HOST":
-				masterIconList = addIcon(masterIconList, createHostIcon(comm[3]))
+				//masterIconList = addIcon(masterIconList, createHostIcon(comm[3]))
 				doMatrixSimpleAction(iconSource, actionName)
-
+				masterIconList = addIcon(masterIconList, createHostIcon(comm[3]))
+				PatrolIC := createICIcon(0)
+				masterIconList.iconArray = append(masterIconList.iconArray, *PatrolIC)
 			
 			}
 		} else {
@@ -142,7 +136,8 @@ func mainBody () {
 		//comm = nil
 		checkPlay()
 		masterIconList = destroyIcon(masterIconList)
-		fmt.Println(iconSource.getIconName(), "end action")
+		markList = updateMarks()
+		//fmt.Println(iconSource.getIconName(), "end action")
 	}
 
 }
@@ -192,6 +187,10 @@ func makeCombatOrder() []int {
 	fmt.Println("Order after sorting:", order)
 	if order[0] < 1 {
 		turn++
+		if turn != 1 {
+			hostAction()	
+		}
+	
 		/*      fmt.Println("Highest ini < 0. Rerolling:", order)
 				fmt.Println("Start turn", turn)
 		        fmt.Println("************")
@@ -297,6 +296,13 @@ func destroyIcon(masterIconList IconList) IconList {
 	//fmt.Println( "Destroy Icons:", masterIconList.iconArray)
 	for i := range masterIconList.iconArray {
 		if masterIconList.iconArray[i].getIconMcm() < 1 {
+			if masterIconList.iconArray[i].getIconType() == "IC" {
+				for j := range host.icArray {
+					if host.icArray[j].icName == masterIconList.iconArray[i].getIconRealName(){
+						host.icArray[j].isLoaded = false
+					}
+				}
+			}
 			//toDelete := masterIconList.iconArray[i].getIconID()
 			result := []Icon{}
 			fmt.Println(masterIconList.iconArray[i].getIconName(), "destroyed")
@@ -382,15 +388,18 @@ func bubbleSort(order []int) {
 }
 
 func allRollInitiative() []int {
+	order = nil
 	for i := range masterIconList.iconArray {
 		var icon Icon
+		//order = nil
 		icon = masterIconList.iconArray[i]
 		icon.setIconInitiative(icon.rollInitiative())
 		if icon.getIconType() == "Grid" || icon.getIconType() == "Host"{
 			icon.setIconInitiative(-100)
 		}
 		masterIconList.iconArray[i].setIconInitiative(icon.getIconInitiative())
-		order[i] = masterIconList.iconArray[i].getIconInitiative()
+		fmt.Println(order, "/", i, "/", len(masterIconList.iconArray), "/", masterIconList.iconArray)
+		order = append(order, masterIconList.iconArray[i].getIconInitiative())
 	}
 	return order
 }

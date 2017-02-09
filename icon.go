@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 var newID int
@@ -10,6 +11,7 @@ var newID int
 type Icon struct {
 	id             int
 	name           string
+	realName	   string
 	iconType       string
 	deviceRating   int
 	attack         int
@@ -55,6 +57,14 @@ func (icon *Icon) setIconName(name string) {
 
 func (icon *Icon) getIconName() string {
 	return icon.name
+}
+
+func (icon *Icon) setIconRealName(realName string) {
+	icon.realName = realName
+}
+
+func (icon *Icon) getIconRealName() string {
+	return icon.realName
 }
 
 func (icon *Icon) setIconType(iconType string) {
@@ -161,7 +171,7 @@ func createPersona() *Icon {
 	newIcon.dataProcessing = 5
 	newIcon.firewall = 5
 	newIcon.initiative = 1
-	newIcon.maxMCM = 8 + newIcon.deviceRating/2
+	newIcon.maxMCM = 8 + newIcon.deviceRating/2 + 1000
 	newIcon.mcm = newIcon.maxMCM
 	newIcon.isPlayer = true
 	fmt.Println("Created new Icon:", newIcon)
@@ -170,13 +180,22 @@ func createPersona() *Icon {
 
 func createHostIcon(comm3 string) *Icon {
 	var newIcon Icon
-	var host Host
-	host = createHost(0)
+	var data []string
+	var host *Host
+	data = strings.SplitN(comm3, ":",2)
+	if len(data) < 2 {
+		i := 0
+		fmt.Println(i)
+		host = createHost(i)
+	} else if i, err := strconv.Atoi(data[1]); err == nil {
+    	fmt.Printf("i=%d, type: %T\n", i, i)
+		host = createHost(i)
+	}
 	newIcon.id = newID
 	newID++
 	newIcon.iconType = "Host"
 	if comm3 != "random" {
-		newIcon.name = comm3	
+		newIcon.name = data[0]	
 	} else {
 		newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)	
 	}
@@ -190,16 +209,18 @@ func createHostIcon(comm3 string) *Icon {
 	newIcon.mcm = 999999
 	newIcon.isPlayer = false
 	fmt.Println("Host Icon Created")
+	//fmt.Println(createICIcon(0))
 	fmt.Println(newIcon)
 	return &newIcon
 }
 
-func createICIcon() *Icon {
+func createICIcon(i int) *Icon {
 	var newIcon Icon
 	newIcon.id = newID
 	newID++
 	newIcon.iconType = "IC"
 	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)	
+	newIcon.realName = host.icArray[i].icName
 	newIcon.deviceRating = host.getHostRating()
 	newIcon.attack = host.getHostAttack()
 	newIcon.sleaze = host.getHostSleaze()
@@ -216,7 +237,6 @@ func createICIcon() *Icon {
 
 func createGridIcon() *Icon {
 	var newIcon Icon
-	createHost(0)
 	newIcon.id = newID
 	newID++
 	newIcon.iconType = "Grid"
