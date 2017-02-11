@@ -11,6 +11,7 @@ import (
 var matrixActionList []string
 var iconActionList []string
 var personaActionList []string
+var icActionList []string
 
 func createMatrixActionList() []string {
 	matrixActionList := make([]string, 0)
@@ -19,6 +20,7 @@ func createMatrixActionList() []string {
 	matrixActionList = append(matrixActionList, "HACK")
 	matrixActionList = append(matrixActionList, "BRUTE_FORCE")
 	matrixActionList = append(matrixActionList, "MATRIX_SEARCH")
+	matrixActionList = append(matrixActionList, "IC_ACTION")
 
 	fmt.Println(matrixActionList)
 	return matrixActionList
@@ -55,6 +57,10 @@ func checkMarksQty(iconSource Icon, iconTarget Icon, comm1 string) (bool, string
 		if haveMarks >= 0 {
 			actionValid = true
 		}
+	case "IC_ACTION":
+		if haveMarks >= 0 {
+			actionValid = true
+		}
 	}
 	reason := "a"
 	if actionValid == false {
@@ -75,7 +81,7 @@ func createIconActList() []string {
 func createICActList() []string {
 	icActionList := make([]string, 0)
 	icActionList = append(matrixActionList, "HOLD")
-	icActionList = append(matrixActionList, "DATA_SPIKE")
+	icActionList = append(matrixActionList, "IC_ACTION")
 	return icActionList
 }
 
@@ -106,7 +112,7 @@ func chooseMatrixAction(iconSource Icon, iconTarget Icon, comm []string) (string
 		case "IC":
 			actionName = matrixActionList[rand.Intn(len(matrixActionList))]
 			switch actionName {
-			case "DATA_SPIKE": //делаем проверку валидности исходя из видимости наличия марок и тд
+			case "IC_ACTION": //делаем проверку валидности исходя из видимости наличия марок и тд
 				actionValid = true
 				fmt.Println(actionName, "Всегда валидно")
 			}
@@ -145,12 +151,19 @@ func actionEffect(actionName *string, iconSource *Icon, iconTarget *Icon, netHit
 	switch *actionName {
 	case "DATA_SPIKE":
 		applyDataSpike(iconSource, iconTarget, *netHits)
+		break
 	case "BRUTE_FORCE":
 		applyBruteForce(iconSource, iconTarget, *netHits)
+		break
 	case "HOLD":
 		//applyHold()
+		break
 	case "MATRIX_SEARCH":
 		//getComm3()
+		break
+	case "IC_ACTION":
+		//выбираем патруль это или нет
+		break
 	}
 
 }

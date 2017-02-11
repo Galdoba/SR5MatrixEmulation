@@ -18,6 +18,9 @@ type IC struct {
 	dataProcessing int
 	firewall       int
 }
+type File struct {
+	
+}
 
 type Host struct {
 	deviceRating   int
@@ -27,6 +30,7 @@ type Host struct {
 	firewall       int
 	grid           string
 	icArray		   []IC
+	fileArray	   []File
 	isCreated	   bool
 }
 
@@ -72,6 +76,10 @@ func createIC(hostICList []string, i int) *IC {
 	localIC.firewall = host.getHostFirewall()
 	localIC.isLoaded = false
 	return &localIC
+}
+
+func createFile() {
+
 }
 
 func generateICMasterList() []string {
@@ -176,6 +184,7 @@ func hostAction() {
 	//host.icArray[0].isLoaded = false
 	if host.icArray[0].isLoaded == false {
 		newIC := createICIcon(0)
+		host.icArray[0].isLoaded = true
 		masterIconList.iconArray = append(masterIconList.iconArray, *newIC)		
 	} else {
 		for j := range host.icArray {

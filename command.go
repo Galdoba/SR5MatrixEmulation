@@ -194,7 +194,7 @@ func parseInput(s string) string {
 }
 
 func outputRed (s string) {
-    var letter []string
+    var letter []string 
     letter = strings.Split(s, "")
     for i := range letter {
     output := "\033[31m" + strings.ToUpper(letter[i]) + "\033[0m"

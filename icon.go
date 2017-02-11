@@ -257,3 +257,29 @@ func (icon *Icon) rollInitiative() int {
 	init := icon.getIconDeviceRating()*2 + xd6Test(4)
 	return init
 }
+
+func destroyIcon(masterIconList IconList) IconList {
+	//fmt.Println( "Destroy Icons:", masterIconList.iconArray)
+	for i := range masterIconList.iconArray {
+		if masterIconList.iconArray[i].getIconMcm() < 1 {
+			if masterIconList.iconArray[i].getIconType() == "IC" {
+				for j := range host.icArray {
+					if host.icArray[j].icName == masterIconList.iconArray[i].getIconRealName(){
+						host.icArray[j].isLoaded = false
+					}
+				}
+			}
+			//toDelete := masterIconList.iconArray[i].getIconID()
+			result := []Icon{}
+			fmt.Println(masterIconList.iconArray[i].getIconName(), "destroyed")
+			clearMarks(masterIconList.iconArray[i].getIconID())
+			result = append(result, masterIconList.iconArray[0:i]...)
+			result = append(result, masterIconList.iconArray[i+1:]...)
+			masterIconList.iconArray = result
+			destroyIcon(masterIconList)
+			break
+
+		}
+	}
+	return masterIconList
+}
