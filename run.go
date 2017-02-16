@@ -1,27 +1,13 @@
-package main
+//package main
 
-import "fmt"
+//import "fmt"
 
 //import "time"
 //import "strings"
 
-func main() {
+//func main() {
 
-	/* All Raolls tests:
-	threshold := 20
-	dicePoolSrc  := 11
-	dicePoolTrgt := 9
-	limit := 4
-	opposedTest(dicePool1, dicePool2, limit)
-	fmt.Println(opposedTest(dicePoolSrc, dicePoolTrgt, limit))
-	fmt.Println("******************************************")
-	fmt.Println(simpleTest(dicePoolSrc, limit, threshold))
-	fmt.Println("******************************************")
-	fmt.Println(xd6Test(dicePoolSrc))
-	fmt.Println("******************************************")
-	fmt.Println("******************************************")
-	fmt.Println(extendedTest(dicePoolSrc, limit, threshold))
-	*/
+	
 
 	//ввод интеджера
 	/*fmt.Print("Enter integer of characters: ")
@@ -30,12 +16,60 @@ func main() {
 	  if err != nil {
 	   fmt.Println("Error in integer input")
 	  }*/
-	station()
-	createRooster()
-
-
-	fmt.Println("******************************************")
+	//  createRooster()
+	//go station()
 	
+
+
+//	fmt.Println("******************************************")
+	
+//}
+
+
+package main
+
+import (
+	
+	tm "github.com/buger/goterm"
+)
+
+func main() {
+	tm.Clear()
+	
+
+	// Create Box with 30% width of current screen, and height of 20 lines
+	//playerInfo := tm.NewBox(20|tm.PCT, 80|tm.PCT, 0)
+	//playerInfo.Border = "— | ┌ ┐ └ ┘"
+
+	// Add some content to the box
+	// Note that you can add ANY content, even tables
+	//fmt.Fprint(playerInfo, "Some box content")
+	station()
+	go createRooster()
+
+	// Move Box to approx center of the screen
+	//tm.Print(tm.MoveTo(playerInfo.String(), 0, 1))
+	//tm.Println(tm.Height())
+	/*outputBox("test")
+fmt.Println(tm.Height())
+	tm.Flush()
+	fmt.Println(tm.Height())
+	fmt.Println(tm.Width())*/
 }
 
-
+/*func outputBox (s string, ) {
+	//fmt.Println = tm.Height()
+	playerInfo := tm.NewBox(20|tm.PCT, 150|tm.PCT, 0)
+	playerInfo.Border = "— | ┌ ┐ └ ┘"
+	//tm.Println(150|tm.PCT)
+	s = "lalalal kjfdhgkdfjgh fgksdfhg"
+	//s1 := split
+	//fmt.Println(tm.Height())
+	fmt.Fprint(playerInfo, s)  
+    //output := "\033[32m" + strings.ToUpper(letter[i]) + "\033[0m"
+    time.Sleep(time.Millisecond * 18)
+	tm.Print(tm.MoveTo(playerInfo.String(), 0, 1))
+    tm.Println("")
+	//fmt.Println(tm.Height())
+    
+}*/

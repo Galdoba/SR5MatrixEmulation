@@ -42,7 +42,8 @@ func userInput () ([]string) {
     for inputLoop == false {
         var input string
         fmt.Println(masterIconList.iconArray)
-        fmt.Scanln(&input)
+        input = readKeybord()
+        //fmt.Scanln(&input)
         command = parseInput(input)
         //command = readInput()
         command = strings.Replace(command, " ", "_", -1)

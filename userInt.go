@@ -101,6 +101,7 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 }
 
 func station() {
+	
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
@@ -176,6 +177,6 @@ func v5Output (g *gocui.Gui, v *gocui.View) error {
 }
 
 func start (g *gocui.Gui, v *gocui.View) error {
-         createRooster()
+         //createRooster()
     return nil
 }

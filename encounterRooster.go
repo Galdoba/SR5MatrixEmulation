@@ -40,11 +40,13 @@ func createRooster() {
 	targetList = makeTargetList()
 	masterIconList = addIcon(masterIconList, createGridIcon()) //Икона сети (надо расширить до остальных)
 	fmt.Println("Add Icons")
+	
 	mainBody()
 }
 
 func mainBody () {
 	var comm []string
+	//go station()
 	for masterIconList.iconArray[0].getIconMcm() > 0 {
 		fmt.Println(iconSource.getIconName(), "start action")
 		fmt.Println(masterIconList.iconArray)
@@ -117,6 +119,7 @@ func mainBody () {
 			comm[2] = strings.Replace(comm[2], " ", "_", -1)
     		comm[2] = strings.ToUpper(comm[2])
 			if len(comm) == 3 {
+				comm = append(comm, "random")
 				comm[3] = "random"
 			}
 			
