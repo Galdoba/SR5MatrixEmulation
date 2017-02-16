@@ -31,7 +31,7 @@ func createRooster() {
 	matrixActionList = createMatrixActionList()
 	personaActionList = createPersonaActList()
 	iconActionList = createIconActList()
-//	var comm []string
+	//	var comm []string
 	actionValid = false
 	markList = createMarkList()
 
@@ -40,11 +40,11 @@ func createRooster() {
 	targetList = makeTargetList()
 	masterIconList = addIcon(masterIconList, createGridIcon()) //Икона сети (надо расширить до остальных)
 	fmt.Println("Add Icons")
-	
+
 	mainBody()
 }
 
-func mainBody () {
+func mainBody() {
 	var comm []string
 	//go station()
 	for masterIconList.iconArray[0].getIconMcm() > 0 {
@@ -71,6 +71,7 @@ func mainBody () {
 		if iconSource.isPlayer == true {
 			outputRed("there are " + strconv.Itoa(len(markList)) + " marks on the list")
 			for actionValid == false {
+				//fmt.Scanln(&input)
 				comm = userInput()
 				iconTarget = asignIconTarget(comm[2])
 				actionName, actionValid := chooseMatrixAction(iconSource, iconTarget, comm)
@@ -110,20 +111,19 @@ func mainBody () {
 				outputRed(comm[0] + ">" + comm[1] + ">" + comm[2])
 		*/
 		//comm[0] = strings.Replace(comm[0], " ", "_", -1)
-    	//comm[0] = strings.ToUpper(comm[0])
-    	//comm[1] = strings.Replace(comm[1], " ", "_", -1)
-    	//comm[1] = strings.ToUpper(comm[1])
-    	//comm[2] = strings.Replace(comm[2], " ", "_", -1)
-    	//comm[2] = strings.ToUpper(comm[2])
+		//comm[0] = strings.ToUpper(comm[0])
+		//comm[1] = strings.Replace(comm[1], " ", "_", -1)
+		//comm[1] = strings.ToUpper(comm[1])
+		//comm[2] = strings.Replace(comm[2], " ", "_", -1)
+		//comm[2] = strings.ToUpper(comm[2])
 		if comm[1] == "MATRIX_SEARCH" {
 			comm[2] = strings.Replace(comm[2], " ", "_", -1)
-    		comm[2] = strings.ToUpper(comm[2])
+			comm[2] = strings.ToUpper(comm[2])
 			if len(comm) == 3 {
 				comm = append(comm, "random")
 				comm[3] = "random"
 			}
-			
-			
+
 			switch comm[2] {
 			case "HOST":
 				//masterIconList = addIcon(masterIconList, createHostIcon(comm[3]))
@@ -131,7 +131,7 @@ func mainBody () {
 				masterIconList = addIcon(masterIconList, createHostIcon(comm[3]))
 				PatrolIC := createICIcon(0)
 				masterIconList.iconArray = append(masterIconList.iconArray, *PatrolIC)
-			
+
 			}
 		} else {
 			doMatrixOppAction(iconSource, iconTarget, actionName)
@@ -159,7 +159,7 @@ func pickIconTarget(targetList IconList) Icon {
 
 func asignIconTarget(comm2 string) Icon {
 	comm2 = strings.ToUpper(comm2)
-	for i:= range masterIconList.iconArray {
+	for i := range masterIconList.iconArray {
 		if comm2 == masterIconList.iconArray[i].getIconName() {
 			iconTarget = masterIconList.iconArray[i]
 			return iconTarget
@@ -187,7 +187,7 @@ func makeCombatOrder() []int {
 		icon = masterIconList.iconArray[i]
 		if icon.getIconType() == "Host" || icon.getIconType() == "Grid" {
 			icon.setIconInitiative(-100)
-		
+
 		}
 		//assert(icon.getIconInitiative() > 0, "Initiative Less than 0")
 		//icon.setIconInitiative(icon.rollInitiative())
@@ -195,18 +195,18 @@ func makeCombatOrder() []int {
 		masterIconList.iconArray[i] = icon
 
 	}
-		fmt.Println("Order before sorting:", order)
+	fmt.Println("Order before sorting:", order)
 	bubbleSort(order)
 	fmt.Println("Order after sorting:", order)
 	endPass()
 	return order
 }
 
-func endPass () {
+func endPass() {
 	if order[0] < 1 {
 		turn++
 		if turn != 1 {
-			hostAction()	
+			hostAction()
 		}
 		allRollInitiative()
 		bubbleSort(order)
@@ -301,8 +301,6 @@ func doMatrixSimpleAction(iconSource Icon, actionName string) { //должно �
 	fmt.Println(masterIconList)
 }
 
-
-
 func renewIconSource(iconSource Icon) {
 	for i := range masterIconList.iconArray {
 		if iconSource.getIconID() == masterIconList.iconArray[i].getIconID() {
@@ -379,7 +377,7 @@ func allRollInitiative() []int {
 		//order = nil
 		icon = masterIconList.iconArray[i]
 		icon.setIconInitiative(icon.rollInitiative())
-		if icon.getIconType() == "Grid" || icon.getIconType() == "Host"{
+		if icon.getIconType() == "Grid" || icon.getIconType() == "Host" {
 			icon.setIconInitiative(-100)
 		}
 		masterIconList.iconArray[i].setIconInitiative(icon.getIconInitiative())
@@ -388,5 +386,3 @@ func allRollInitiative() []int {
 	}
 	return order
 }
-
-
