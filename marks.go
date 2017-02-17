@@ -49,7 +49,7 @@ func updateMarks() []Mark {
 			}
 		}
 	}
-	fmt.Println(markList)
+	//fmt.Println(markList)
 	return markList
 }
 

@@ -36,7 +36,7 @@ func main() {
 	}
 
 	tm.Clear()
-	readKeybord()
+	//readKeybord()
 	// Create Box with 30% width of current screen, and height of 20 lines
 	//playerInfo := tm.NewBox(20|tm.PCT, 80|tm.PCT, 0)
 	//playerInfo.Border = "— | ┌ ┐ └ ┘"
@@ -44,8 +44,8 @@ func main() {
 	// Add some content to the box
 	// Note that you can add ANY content, even tables
 	//fmt.Fprint(playerInfo, "Some box content")
-	//station()
-	//createRooster()
+	station()
+	createRooster()
 
 	// Move Box to approx center of the screen
 	//tm.Print(tm.MoveTo(playerInfo.String(), 0, 1))

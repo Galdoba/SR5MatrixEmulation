@@ -11,7 +11,7 @@ var newID int
 type Icon struct {
 	id             int
 	name           string
-	realName	   string
+	realName       string
 	iconType       string
 	deviceRating   int
 	attack         int
@@ -182,22 +182,22 @@ func createHostIcon(comm3 string) *Icon {
 	var newIcon Icon
 	var data []string
 	var host *Host
-	data = strings.SplitN(comm3, ":",2)
+	data = strings.SplitN(comm3, ":", 2)
 	if len(data) < 2 {
 		i := 0
-		fmt.Println(i)
+		//fmt.Println(i)
 		host = createHost(i)
 	} else if i, err := strconv.Atoi(data[1]); err == nil {
-    	fmt.Printf("i=%d, type: %T\n", i, i)
+		fmt.Printf("i=%d, type: %T\n", i, i)
 		host = createHost(i)
 	}
 	newIcon.id = newID
 	newID++
 	newIcon.iconType = "Host"
 	if comm3 != "random" {
-		newIcon.name = data[0]	
+		newIcon.name = data[0]
 	} else {
-		newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)	
+		newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)
 	}
 	newIcon.deviceRating = host.getHostRating()
 	newIcon.attack = host.getHostAttack()
@@ -219,7 +219,7 @@ func createICIcon(i int) *Icon {
 	newIcon.id = newID
 	newID++
 	newIcon.iconType = "IC"
-	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)	
+	newIcon.name = newIcon.iconType + strconv.Itoa(newIcon.id)
 	newIcon.realName = host.icArray[i].icName
 	newIcon.deviceRating = host.getHostRating()
 	newIcon.attack = host.getHostAttack()
@@ -253,7 +253,7 @@ func createGridIcon() *Icon {
 }
 
 func (icon *Icon) rollInitiative() int {
-	fmt.Println("Icon №", icon.getIconID(), "rolls for initiative...")
+	//fmt.Println("Icon №", icon.getIconID(), "rolls for initiative...")
 	init := icon.getIconDeviceRating()*2 + xd6Test(4)
 	return init
 }
@@ -264,7 +264,7 @@ func destroyIcon(masterIconList IconList) IconList {
 		if masterIconList.iconArray[i].getIconMcm() < 1 {
 			if masterIconList.iconArray[i].getIconType() == "IC" {
 				for j := range host.icArray {
-					if host.icArray[j].icName == masterIconList.iconArray[i].getIconRealName(){
+					if host.icArray[j].icName == masterIconList.iconArray[i].getIconRealName() {
 						host.icArray[j].isLoaded = false
 					}
 				}

@@ -12,42 +12,34 @@ import (
 var buf chan rune
 
 func readKeybord() string {
-	/*err := termbox.Init()
-	if err != nil {
-		panic(err)
-	}
-	defer termbox.Close()*/
 	///////////////////////////////////
 	buf = make(chan rune, 16)
 	var input string
-	lenth := len(input)
 	go iLoop()
 	i := 0
 	key := rune(0)
 	for key != 13 {
+		fmt.Printf("%s    \x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08", input)
 		if KeyPressed() {
 			key = ReadKey()
+			input = input + string(key)
 			if key == 27 { //при нажатии эскейпа выходим из программы
 				fmt.Println("Exit on demand!")
 				os.Exit(13)
 			}
 			if key == 8 { //при нажатии бэкспэйса удаляем одну букву
-				input = input[:lenth]
-				fmt.Print(input, "\x08")
+				if len(input) > 1 {
+					input = input[:len(input)-2]
+				} else {
+				}
+				key = 0
 			}
-			input = input + string(key)
-			fmt.Print(string(key))
-			//fmt.Printf("%c:%d globKey - %c \n counter= %d", key, key, key, i)
-			//fmt.Println("")
 			getInputString(input)
 			i = 0
 		}
-		//fmt.Printf("%d\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08", i)
 		i++
 	}
-	fmt.Println("stop")
-	//lenth := len(input)
-	//input = input[:lenth-1]
+	input = input[:len(input)-1]
 	fmt.Println("return string: " + input)
 	return input
 }
@@ -81,8 +73,10 @@ func iLoop() {
 }
 
 func getInputString(input string) string {
-	lenth := len(input)
-	input = input[:lenth-1]
+	if len(input) > 1 {
+		input = input[:len(input)-1]
+
+	}
 	//fmt.Println("return string: " + input)
 	return input
 }
