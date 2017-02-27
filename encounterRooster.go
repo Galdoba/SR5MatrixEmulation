@@ -28,12 +28,13 @@ type IconList struct {
 
 func createRooster() {
 	markList = createMarkList()
+	relations = createRelations()
 	matrixActionList = createMatrixActionList()
 	personaActionList = createPersonaActList()
 	iconActionList = createIconActList()
 	//	var comm []string
 	actionValid = false
-	markList = createMarkList()
+	//markList = createMarkList()
 
 	fmt.Println("Start Creating Rooster")
 	masterIconList = makeIconList()

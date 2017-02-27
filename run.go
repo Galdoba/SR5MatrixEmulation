@@ -44,7 +44,7 @@ func main() {
 	// Add some content to the box
 	// Note that you can add ANY content, even tables
 	//fmt.Fprint(playerInfo, "Some box content")
-	station()
+	//station()
 	createRooster()
 
 	// Move Box to approx center of the screen
